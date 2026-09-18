@@ -58,6 +58,20 @@ __device__ float free_flight_time(curandState &state, double scattering_rate) {
     return -log(curand_uniform(&state))/scattering_rate;
 }
 
+
+__global__ void initialise_particles(Particle particles) {
+    int idx = idx =blockIdx.x * blockDim.x + threadIdx.x;
+    particles.x[idx] = 0.0;
+    particles.y[idx] = 0.0;
+    particles.z[idx] = 0.0;
+    particles.vx[idx] = 0.0;
+    particles.vy[idx] = 0.0;
+    particles.vz[idx] = 0.0;
+    particles.W[idx] = -1.0;
+    particles.scattering_rate[idx] = -1.0;
+    particles.alive[idx] = false; 
+}
+
 __global__ void transport(Particle particles, int N_particles, double dt) {
 
     int idx = idx =blockIdx.x * blockDim.x + threadIdx.x;
@@ -128,7 +142,6 @@ void transport_loop(int ensemble, Settings settings) {
             cudaMemcpy(h_x, particles.x, N*sizeof(double), cudaMemcpyDeviceToHost);
             cudaMemcpy(h_y, particles.y, N*sizeof(double), cudaMemcpyDeviceToHost);
             cudaMemcpy(h_z, particles.z, N*sizeof(double), cudaMemcpyDeviceToHost);
-
 
             output_positions(h_x, h_y, h_z, N, time);
         }

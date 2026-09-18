@@ -2,8 +2,15 @@
 #include <iostream>
 
 YAML::Node open_yaml(const std::string& fname) {
-    YAML::Node config = YAML::LoadFile(fname);
-    return config;
+    try{
+        YAML::Node config = YAML::LoadFile(fname);
+        return config;
+    }
+    catch (const YAML::Exception& e) {
+        std::cerr << "Error loading YAML file: " << fname << std::endl;
+        std::exit(EXIT_FAILURE);
+        return YAML::Node();
+    }
 }
 
 template <typename T>
