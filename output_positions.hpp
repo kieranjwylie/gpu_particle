@@ -1,0 +1,1 @@
+void output_positions(double *x, double *y, double *z, int N_particles, double time);
